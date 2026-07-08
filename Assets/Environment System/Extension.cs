@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum FlightState { Idle, Flying, Falling, Landed }
+public enum FlightState { Stay, Flying }
 
 public enum TileType { Ground, Sky, Space }
 

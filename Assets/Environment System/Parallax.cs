@@ -5,9 +5,6 @@ public class Parallax : MonoBehaviour
 {
     public static Parallax Instance;
 
-    List<Tile> tiles = new();
-    Stack<TileData> history = new();
-
     [Header("Tile Models")]
     [SerializeField] TileData ground;
     [SerializeField] TileData sky;
@@ -15,122 +12,95 @@ public class Parallax : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] int limit = 3;
+    [SerializeField] Rocket rocket;
 
-    [SerializeField] float maxHeight = 500f;    //Placeholder Rocket Max Height
+    List<Tile> tiles = new();
 
-    public Rocket rocket;
+    FlightState state = FlightState.Stay;
 
-    private FlightState state = FlightState.Idle;
-
-
-    private float start;
-    private float next;
-
-    private bool started;
+    float start = 0;
+    float next;
+    bool started;
 
     void Awake() => Instance = this;
 
     void Start()
     {
         next = start;
-
         SpawnTile(ground);
         SpawnTile(sky);
-
-        for (int i = 0; i < limit - 2; i++) { SpawnTile(GetRandomSpace()); }
+        while (tiles.Count < limit + 2) { SpawnSpaceTile(); }
     }
 
     public void Play()
     {
         if (started) { return; }
-
         started = true;
         state = FlightState.Flying;
     }
 
     public void Stop()
     {
-        if (!started) return;
-
+        if (!started) { return; }
         started = false;
-        state = FlightState.Landed;
+        state = FlightState.Stay;
     }
 
     void Update()
     {
-        switch (state)
-        {
-            case FlightState.Idle:
-                break;
-
-            case FlightState.Flying:
-                MoveAscend();
-                break;
-
-            case FlightState.Landed:
-                break;
-        }
+        if (state == FlightState.Flying) { MoveAscend(); }
     }
 
     void MoveAscend()
     {
         Vector3 move = Vector3.down * rocket.velocity * Time.deltaTime;
-
-        foreach (Tile tile in tiles)
-        {
-            tile.gameObject.transform.position += move;
-        }
-
+        foreach (Tile tile in tiles) { tile.gameObject.transform.position += move; }
         UpdateTilePositions();
     }
+
     void UpdateTilePositions()
     {
         float lowerLimit = -30f;
-
-        foreach (Tile tile in tiles)
+        for (int i = tiles.Count - 1; i >= 0; i--)
         {
+            Tile tile = tiles[i];
             if (tile.gameObject.transform.position.y < lowerLimit)
             {
-                TileToTop(tile);
-                break;
+                tiles.RemoveAt(i);
+                Destroy(tile.gameObject);
+                SpawnSpaceTile();
             }
         }
     }
 
-    void TileToTop(Tile tile)
+    void SpawnSpaceTile()
     {
-        float highest = GetHighest();
-        float height = tile.adapter.GetHeight();
-
-        TileData data = GetRandomSpace();
-        history.Push(data);
-
-        tile.adapter.SetData(data);
-        tile.gameObject.transform.position = new Vector3(0, highest + height, 0);
+        TileData data = RandomSpaceModel();
+        GameObject obj = Instantiate(data.gameObject, transform);
+        if (!obj.TryGetComponent(out TileAdapter adapter)) { adapter = obj.AddComponent<TileAdapter>(); }
+        adapter.SetData(data);
+        float y = GetHighest() + adapter.GetHeight();
+        obj.transform.position = new Vector3(0, y, 0);
+        tiles.Add(new Tile { gameObject = obj, adapter = adapter });
     }
 
     void SpawnTile(TileData data)
     {
-        GameObject tile = Instantiate(data.gameObject, transform);
-        if (!tile.TryGetComponent(out TileAdapter adapter)) { adapter = tile.AddComponent<TileAdapter>(); }
+        GameObject obj = Instantiate(data.gameObject, transform);
+        if (!obj.TryGetComponent(out TileAdapter adapter)) { adapter = obj.AddComponent<TileAdapter>(); }
         adapter.SetData(data);
-
-        tile.transform.position = new Vector3(0, next, 0);
+        obj.transform.position = new Vector3(0, next, 0);
         next += adapter.GetHeight();
-
-        tiles.Add(new Tile { gameObject = tile, adapter = adapter });
-        if (data.type == TileType.Space) { history.Push(data); }
-    }
-
-    TileData GetRandomSpace()
-    {
-        return spaces[Random.Range(0, spaces.Count)];
+        tiles.Add(new Tile { gameObject = obj, adapter = adapter });
     }
 
     float GetHighest()
     {
-        float highest = float.MinValue;
+        if (tiles.Count == 0) { return start; }
+        float highest = tiles[0].gameObject.transform.position.y;
         foreach (Tile tile in tiles) { if (tile.gameObject.transform.position.y > highest) { highest = tile.gameObject.transform.position.y; } }
         return highest;
     }
+
+    TileData RandomSpaceModel() => spaces[Random.Range(0, spaces.Count)];
 }
