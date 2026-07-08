@@ -42,8 +42,8 @@ public class Store : MonoBehaviour
             }
         }
     }
-    public void OnPurchaseFailed(Product product, PurchaseFailureReason reason)
+    public void OnPurchaseFailed(Product product, PurchaseFailureDescription failureDescription)
     {
-        Debug.LogWarning($"Purchase failed on {product.definition.id}, reason {reason}");
+        Debug.LogWarning($"Purchase failed on {product.definition.id}, reason {failureDescription}");
     }
 }
