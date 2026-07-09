@@ -74,7 +74,7 @@ public class Notification : MonoBehaviour
         btnDaily.SetActive(false);
         txtCoins.text = bonusCOinAmount.ToString() + "COINS";
         panelClaim.SetActive(true);
-        sendNotification("Rocket Ignition", "Your claim is here! Ambil bonus coin gratismu sekarang.", bonusIntervalSeconds);
+        sendNotification("Rocket Ignition", "Your daily reward is here! Ambil bonus coin gratismu sekarang.", bonusIntervalSeconds);
     }
     public void sendNotification(string title, string content, int seconds)
     {
