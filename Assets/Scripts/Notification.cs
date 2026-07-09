@@ -6,7 +6,7 @@ using System;
 
 public class Notification : MonoBehaviour
 {
-    [SerializeField] private int bonusIntervalSeconds = 300;
+    [SerializeField] private int bonusIntervalSeconds = 86400;
     [SerializeField] private int bonusCOinAmount = 20;
 
     [SerializeField] private GameObject btnDaily;
@@ -69,10 +69,12 @@ public class Notification : MonoBehaviour
         UpgradeManager.Instance.AddCoin(bonusCOinAmount);
         long newNextCLaim = current + bonusIntervalSeconds;
         PlayerPrefs.SetString(NEXT_CLAIM_KEY, newNextCLaim.ToString());
+        PlayerPrefs.Save();
 
         btnDaily.SetActive(false);
         txtCoins.text = bonusCOinAmount.ToString() + "COINS";
         panelClaim.SetActive(true);
+        sendNotification("Rocket Ignition", "Your claim is here! Ambil bonus coin gratismu sekarang.", bonusIntervalSeconds);
     }
     public void sendNotification(string title, string content, int seconds)
     {
@@ -85,17 +87,21 @@ public class Notification : MonoBehaviour
 
     private void OnApplicationPause(bool isPaused)
     {
-        if (isPaused)
-        {
-            long nextClaim = GetNextClaimUnixTime();
-            long current = GetCurrentUnixTime();
-            long secondsLeft = nextClaim - current;
-            if (secondsLeft > 0)
-            {
-                sendNotification("Rocket Ignition", "Your claim is here! Ambil bonus coin gratismu sekarang.", (int)secondsLeft);
-            }
-        }
-        else
+        //if (isPaused)
+        //{
+        //    long nextClaim = GetNextClaimUnixTime();
+        //    long current = GetCurrentUnixTime();
+        //    long secondsLeft = nextClaim - current;
+        //    if (secondsLeft > 0)
+        //    {
+        //        sendNotification("Rocket Ignition", "Your claim is here! Ambil bonus coin gratismu sekarang.", (int)secondsLeft);
+        //    }
+        //}
+        //else
+        //{
+        //    RefreshClaimState();
+        //}
+        if (!isPaused)
         {
             RefreshClaimState();
         }
