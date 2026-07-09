@@ -61,13 +61,13 @@ public class Rocket : MonoBehaviour
     public void UpdateUI()
     {
         txtFuel.text = $"{(int)currentFuel} / {(int)maxFuel}";
-        txtAltitude.text = $"{(int)totalHeight} m";
+        txtAltitude.text = $"{(int)flightHeight} m";
     }
 
     public void Play()
     {
-        flightHeight = 0;
         isFlying = true;
+        HapticManager.Instance.Vibrate();
 
         Parallax.Instance.Play();
 
@@ -78,6 +78,7 @@ public class Rocket : MonoBehaviour
     {
         isFlying = false;
         velocity = 0;
+        HapticManager.Instance.Vibrate();
 
         int earnedCoin = Mathf.FloorToInt(flightHeight / 10f);
         UpgradeManager.Instance.AddCoin(earnedCoin);
@@ -90,6 +91,7 @@ public class Rocket : MonoBehaviour
         UpdateUI();
 
         Parallax.Instance.Stop();
+        flightHeight = 0;
 
     }
 }

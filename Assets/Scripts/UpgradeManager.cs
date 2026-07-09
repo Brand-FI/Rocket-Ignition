@@ -94,6 +94,7 @@ public class UpgradeManager : MonoBehaviour
 
         coin -= price;
         fuelLevel++;
+        HapticManager.Instance.Vibrate();
 
         Save();
     }
@@ -107,6 +108,7 @@ public class UpgradeManager : MonoBehaviour
 
         coin -= price;
         speedLevel++;
+        HapticManager.Instance.Vibrate();
 
         Save();
     }
@@ -120,6 +122,7 @@ public class UpgradeManager : MonoBehaviour
 
         coin -= price;
         efficiencyLevel++;
+        HapticManager.Instance.Vibrate();
 
         Save();
     }

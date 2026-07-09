@@ -103,4 +103,26 @@ public class Parallax : MonoBehaviour
     }
 
     TileData RandomSpaceModel() => spaces[Random.Range(0, spaces.Count)];
+    public void ResetParallax()
+    {
+        foreach (Tile tile in tiles)
+        {
+            Destroy(tile.gameObject);
+        }
+
+        tiles.Clear();
+
+        next = start;
+
+        SpawnTile(ground);
+        SpawnTile(sky);
+
+        while (tiles.Count < limit + 2)
+        {
+            SpawnSpaceTile();
+        }
+
+        started = false;
+        state = FlightState.Stay;
+    }
 }

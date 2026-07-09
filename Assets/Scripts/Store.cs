@@ -35,7 +35,6 @@ public class Store : MonoBehaviour
         if (coinAmount > 0)
         {
             UpgradeManager.Instance.AddCoin(coinAmount);
-            if (panelPurchase != null) panelPurchase.SetActive(false);
             if (panelClaim != null && txtCoinsEarn != null)
             {
                 txtCoinsEarn.text = $"{coinAmount} COINS";

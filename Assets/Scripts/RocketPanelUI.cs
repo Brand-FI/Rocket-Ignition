@@ -37,6 +37,8 @@ public class RocketPanelUI : MonoBehaviour
         {
             adRewardClaimed = true;
             UpgradeManager.Instance.AddCoin(lastEarnedCoin);
+            HapticManager.Instance.Vibrate();
+
             txtEarnedCoin.text = $"+{lastEarnedCoin * 2}";
             txtTotalCoin.text = UpgradeManager.Instance.coin.ToString();
             if(btnAd != null) btnAd.gameObject.SetActive(false);
